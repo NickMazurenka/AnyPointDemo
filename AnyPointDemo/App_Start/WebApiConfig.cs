@@ -7,6 +7,9 @@ namespace AnyPointDemo
         public static void Register(HttpConfiguration config)
         {
 			RAML.WebApiExplorer.DocumentationProviderConfig.IncludeXmlComments();
+			
+			
+			
 
             config.MapHttpAttributeRoutes();
 

@@ -47,7 +47,7 @@ namespace AnyPointDemo.Controllers
         /// <returns></returns>
         [HttpGet]
 		[Route("cities/{cityId}")]
-		[ResponseType(typeof(IEnumerable<CityDto>))]
+		[ResponseType(typeof(CityDto))]
         public IHttpActionResult GetCity(int cityId, bool includePointsOfInterest = false)
         {
             var city = _cityInfoRepository.GetCity(cityId, includePointsOfInterest);
