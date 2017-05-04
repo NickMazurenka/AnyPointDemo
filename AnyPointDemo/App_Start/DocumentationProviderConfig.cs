@@ -32,10 +32,13 @@ namespace AnyPointDemo
         {
             var config = GlobalConfiguration.Configuration;
             if (string.IsNullOrWhiteSpace(xmlCommentsPath))
+            {
                 xmlCommentsPath = GetXmlCommentsPath();
+            }
 
-            config.Services.Replace(typeof (IDocumentationProvider),
-            new XmlCommentDocumentationProvider(xmlCommentsPath));
+            config.Services.Replace(
+                typeof(IDocumentationProvider),
+                new XmlCommentDocumentationProvider(xmlCommentsPath));
         }
 
         /// <summary>
@@ -46,7 +49,7 @@ namespace AnyPointDemo
         /// </returns>
         public static string GetXmlCommentsPath()
         {
-            return String.Format(@"{0}\bin\{1}.xml", HttpContext.Current.Server.MapPath(""), Assembly.GetCallingAssembly().GetName().Name);
+            return $@"{HttpContext.Current.Server.MapPath("")}\bin\{Assembly.GetCallingAssembly().GetName().Name}.xml";
         } 
     }
 }

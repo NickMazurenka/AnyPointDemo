@@ -24,6 +24,11 @@ namespace AnyPointDemo
         /// </param>
         public static void Register(HttpConfiguration config)
         {
+			RAML.WebApiExplorer.DocumentationProviderConfig.IncludeXmlComments();
+			
+			
+			
+
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
