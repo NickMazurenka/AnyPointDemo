@@ -9,7 +9,6 @@
 
 namespace AnyPointDemo
 {
-    using System;
     using System.Reflection;
     using System.Web;
     using System.Web.Http;
