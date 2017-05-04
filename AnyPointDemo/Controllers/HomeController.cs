@@ -1,30 +1,30 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FilterConfig.cs" company="TractManager, Inc.">
+// <copyright file="HomeController.cs" company="TractManager, Inc.">
 //   Copyright © 2017
 // </copyright>
 // <summary>
-//   Defines the FilterConfig type.
+//   The home controller.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace AnyPointDemo
+namespace SwaggerDemo.Controllers
 {
     using System.Web.Mvc;
 
     /// <summary>
-    /// The filter config.
+    /// Home controller to open swagger UI as default page.
     /// </summary>
-    public static class FilterConfig
+    public class HomeController : Controller
     {
         /// <summary>
-        /// The register global filters.
+        /// The index.
         /// </summary>
-        /// <param name="filters">
-        /// The filters.
-        /// </param>
-        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+        /// <returns>
+        /// The <see cref="ActionResult"/>.
+        /// </returns>
+        public ActionResult Index()
         {
-            filters.Add(new HandleErrorAttribute());
+            return new RedirectResult("~/swagger/ui/index");
         }
     }
 }

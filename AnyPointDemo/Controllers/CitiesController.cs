@@ -1,63 +1,88 @@
-﻿using System.Collections.Generic;
-using System.Web.Http;
-using System.Web.Http.Description;
-using AnyPointDemo.Models;
-using AnyPointDemo.Services;
-using AutoMapper;
-using Microsoft.Practices.Unity;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CitiesController.cs" company="TractManager, Inc.">
+//   Copyright © 2017
+// </copyright>
+// <summary>
+//   Cities controller
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace AnyPointDemo.Controllers
 {
+    using System.Collections.Generic;
+    using System.Web.Http;
+    using System.Web.Http.Description;
+    using System.Web.Http.Results;
+
+    using AnyPointDemo.Models;
+    using AnyPointDemo.Services;
+
+    using AutoMapper;
+
+    using Microsoft.Practices.Unity;
+
     /// <summary>
     /// Cities controller
     /// </summary>
     [RoutePrefix("api")]
     public class CitiesController : ApiController
     {
-        private readonly ICityInfoRepository _cityInfoRepository;
+        /// <summary>
+        /// The city info repository.
+        /// </summary>
+        private readonly ICityInfoRepository cityInfoRepository;
 
         /// <summary>
-        /// Cities controller constructor
+        /// Initializes a new instance of the <see cref="CitiesController"/> class. 
         /// </summary>
         public CitiesController()
         {
-            _cityInfoRepository = IocContainer.Instance.Resolve<ICityInfoRepository>();
+            this.cityInfoRepository = IocContainer.Instance.Resolve<ICityInfoRepository>();
         }
 
         /// <summary>
-        /// Gets list of cities
+        /// Get cities without points of interest.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The <see cref="IHttpActionResult"/>.
+        /// </returns>
         [HttpGet]
-		[Route("cities")]
-		[ResponseType(typeof(IEnumerable<CityWithoutPointsOfInterestDto>))]
+        [Route("cities")]
+        [ResponseType(typeof(IEnumerable<CityWithoutPointsOfInterestDto>))]
         public IHttpActionResult GetCities()
         {
-	        return Ok(Mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(_cityInfoRepository.GetCities()));
+            return this.Ok(Mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(this.cityInfoRepository.GetCities()));
         }
 
         /// <summary>
-        /// Get city by cityId
+        /// Get city with or without point of interest.
         /// </summary>
-        /// <remarks>
-        /// Optionally lists corresponding points of interest
-        /// </remarks>
-        /// <param name="cityId">Id of city to show</param>
-        /// <param name="includePointsOfInterest">Flag to include list of points of interest</param>
-        /// <returns></returns>
+        /// <param name="cityId">
+        /// Id of city.
+        /// </param>
+        /// <param name="includePointsOfInterest">
+        /// Flag to include points of interest.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IHttpActionResult"/>.
+        /// </returns>
         [HttpGet]
-		[Route("cities/{cityId}")]
-		[ResponseType(typeof(IEnumerable<CityDto>))]
+        [Route("cities/{cityId}")]
+        [ResponseType(typeof(CityDto))]
         public IHttpActionResult GetCity(int cityId, bool includePointsOfInterest = false)
         {
-            var city = _cityInfoRepository.GetCity(cityId, includePointsOfInterest);
-            if (city == null) return NotFound();
+            var city = this.cityInfoRepository.GetCity(cityId, includePointsOfInterest);
+            if (city == null)
+            {
+                return this.NotFound();
+            }
 
-	        if (includePointsOfInterest)
-		        return Ok(Mapper.Map<CityDto>(city));
-	        else
-		        return Ok(Mapper.Map<CityWithoutPointsOfInterestDto>(city));
+            if (includePointsOfInterest)
+            {
+                return this.Ok(Mapper.Map<CityDto>(city));
+            }
+
+            return this.Ok(Mapper.Map<CityWithoutPointsOfInterestDto>(city));
         }
-
     }
 }

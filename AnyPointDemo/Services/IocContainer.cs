@@ -1,25 +1,51 @@
-﻿using Microsoft.Practices.Unity;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IocContainer.cs" company="TractManager, Inc.">
+//   Copyright © 2017
+// </copyright>
+// <summary>
+//   Defines the IocContainer type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
-public sealed class IocContainer : UnityContainer
+namespace AnyPointDemo.Services
 {
-	private static volatile IocContainer _instance;
-	private static readonly object SyncRoot = new object();
+    using Microsoft.Practices.Unity;
 
-	public static IocContainer Instance
-	{
-		get
-		{
-			if (_instance == null)
-			{
-				lock (SyncRoot)
-				{
-					if (_instance == null)
-					{
-						_instance = new IocContainer();
-					}
-				}
-			}
-			return _instance;
-		}
-	}
+    /// <summary>
+    /// The IoC container.
+    /// </summary>
+    public sealed class IocContainer : UnityContainer
+    {
+        /// <summary>
+        /// The sync root.
+        /// </summary>
+        private static readonly object SyncRoot = new object();
+
+        /// <summary>
+        /// The _instance.
+        /// </summary>
+        private static volatile IocContainer instance;
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        public static IocContainer Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    lock (SyncRoot)
+                    {
+                        if (instance == null)
+                        {
+                            instance = new IocContainer();
+                        }
+                    }
+                }
+
+                return instance;
+            }
+        }
+    }
 }

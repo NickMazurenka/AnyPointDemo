@@ -1,22 +1,31 @@
-﻿namespace AnyPointDemo.Models
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CityWithoutPointsOfInterestDto.cs" company="TractManager, Inc.">
+//   Copyright © 2017
+// </copyright>
+// <summary>
+//   City without points of interest
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace AnyPointDemo.Models
 {
     /// <summary>
-    /// City without points of interest
+    /// The city without points of interest DTO.
     /// </summary>
     public class CityWithoutPointsOfInterestDto
     {
         /// <summary>
-        /// Id of city
+        /// Gets or sets the id.
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// Name of the city
+        /// Gets or sets the name.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// City description
+        /// Gets or sets the description.
         /// </summary>
         public string Description { get; set; }
     }

@@ -1,155 +1,256 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Web.Http;
-using AnyPointDemo.Entities;
-using AnyPointDemo.Models;
-using AnyPointDemo.Services;
-using Microsoft.Practices.Unity;
-using AutoMapper;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PointsOfInterestController.cs" company="TractManager, Inc.">
+//   Copyright © 2017
+// </copyright>
+// <summary>
+//   Points of interest controller
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace AnyPointDemo.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Web.Http;
+    using System.Web.Http.Description;
+
+    using AnyPointDemo.Entities;
+    using AnyPointDemo.Models;
+    using AnyPointDemo.Services;
+
+    using AutoMapper;
+
+    using Microsoft.Practices.Unity;
+
     /// <summary>
     /// Points of interest controller
     /// </summary>
     [RoutePrefix("api")]
     public class PointsOfInterestController : ApiController
     {
-        private ICityInfoRepository _cityInfoRepository;
-
-	    /// <summary>
-	    /// Points of interest controller constructor
-	    /// </summary>
-	    public PointsOfInterestController()
-        {
-            _cityInfoRepository = _cityInfoRepository = IocContainer.Instance.Resolve<ICityInfoRepository>();
-		}
+        /// <summary>
+        /// The city info repository.
+        /// </summary>
+        private readonly ICityInfoRepository cityInfoRepository;
 
         /// <summary>
-        /// Get all points of interest for city with specified id
+        /// Initializes a new instance of the <see cref="PointsOfInterestController"/> class.
         /// </summary>
-        /// <param name="cityId">Id of city to show points of interest</param>
-        /// <returns></returns>
+        public PointsOfInterestController()
+        {
+            this.cityInfoRepository = this.cityInfoRepository = IocContainer.Instance.Resolve<ICityInfoRepository>();
+        }
+
+        /// <summary>
+        /// Get all points of interest for specified city.
+        /// </summary>
+        /// <param name="cityId">
+        /// Id of city.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IHttpActionResult"/>.
+        /// </returns>
         [HttpGet]
-		[Route("cities/{cityId}/pointsofinterest")]
+        [Route("cities/{cityId}/pointsofinterest")]
+        [ResponseType(typeof(IEnumerable<PointOfInterestDto>))]
         public IHttpActionResult GetPointsOfInterest(int cityId)
         {
             try
             {
-                if (!_cityInfoRepository.CityExists(cityId))
+                if (!this.cityInfoRepository.CityExists(cityId))
                 {
-                    return NotFound();
+                    return this.NotFound();
                 }
 
-	            return Ok(Mapper.Map<IEnumerable<PointOfInterestDto>>(_cityInfoRepository.GetPointsOfInterestForCity(cityId)));
+                return
+                    this.Ok(
+                        Mapper.Map<IEnumerable<PointOfInterestDto>>(
+                            this.cityInfoRepository.GetPointsOfInterestForCity(cityId)));
             }
             catch (Exception e)
             {
-				return InternalServerError();
+                return this.InternalServerError(e);
             }
-            
         }
 
         /// <summary>
-        /// Get point of interest by poiId corresponding to city with specified id
+        /// Get point of interest for specified city
         /// </summary>
-        /// <param name="cityId">Id of city</param>
-        /// <param name="poiId">Id of point of interest</param>
-        /// <returns></returns>
+        /// <param name="cityId">
+        /// Id of city.
+        /// </param>
+        /// <param name="poiId">
+        /// Id of point of interest.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IHttpActionResult"/>.
+        /// </returns>
         [HttpGet]
-		[Route("cities/{cityId}/pointsofinterest/{poiId}", Name = "GetPointOfInterest")]
+        [Route("cities/{cityId}/pointsofinterest/{poiId}", Name = "GetPointOfInterest")]
+        [ResponseType(typeof(PointOfInterestDto))]
         public IHttpActionResult GetPointOfInterest(int cityId, int poiId)
         {
-			if (!_cityInfoRepository.CityExists(cityId)) return NotFound();
+            if (!this.cityInfoRepository.CityExists(cityId))
+            {
+                return this.NotFound();
+            }
 
-	        var pointOfInterestFromDb = _cityInfoRepository.GetPointOfInterestForCity(cityId, poiId);
-	        if (pointOfInterestFromDb == null) return NotFound();
+            var pointOfInterestFromDb = this.cityInfoRepository.GetPointOfInterestForCity(cityId, poiId);
+            if (pointOfInterestFromDb == null)
+            {
+                return this.NotFound();
+            }
 
-	        return Ok(Mapper.Map<PointOfInterestDto>(pointOfInterestFromDb));
+            return this.Ok(Mapper.Map<PointOfInterestDto>(pointOfInterestFromDb));
         }
 
         /// <summary>
-        /// Create point of interest for city with specified id
+        /// Create point of interest for specified city
         /// </summary>
-        /// <param name="cityId">Id of city</param>
-        /// <param name="pointOfInterest">Point of interest to create</param>
-        /// <returns></returns>
+        /// <param name="cityId">
+        /// Id of city.
+        /// </param>
+        /// <param name="pointOfInterest">
+        /// Point of interest to create.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IHttpActionResult"/>.
+        /// </returns>
         [HttpPost]
         [Route("cities/{cityId}/pointsofinterest")]
-        public IHttpActionResult CreatePointOfInterest(int cityId,
-			[FromBody] PointOfInterestForCreationDto pointOfInterest)
+        [ResponseType(typeof(PointOfInterestDto))]
+        public IHttpActionResult CreatePointOfInterest(
+            int cityId,
+            [FromBody] PointOfInterestForCreationDto pointOfInterest)
         {
-	        if (pointOfInterest == null) return BadRequest();
+            if (pointOfInterest == null)
+            {
+                return this.BadRequest();
+            }
 
             if (pointOfInterest.Description == pointOfInterest.Name)
-                ModelState.AddModelError("Description", "Description should not be equal to name");
+            {
+                this.ModelState.AddModelError("Description", "Description should not be equal to name");
+            }
 
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
 
-            if (!_cityInfoRepository.CityExists(cityId)) return NotFound();
+            if (!this.cityInfoRepository.CityExists(cityId))
+            {
+                return this.NotFound();
+            }
 
-	        var pointToCreate = Mapper.Map<PointOfInterest>(pointOfInterest);
-			_cityInfoRepository.AddPointOfInterestForCity(cityId, pointToCreate);
+            var pointToCreate = Mapper.Map<PointOfInterest>(pointOfInterest);
+            this.cityInfoRepository.AddPointOfInterestForCity(cityId, pointToCreate);
 
-			if (!_cityInfoRepository.Save()) return InternalServerError();
+            if (!this.cityInfoRepository.Save())
+            {
+                return this.InternalServerError(new Exception("Failed to save changes into database"));
+            }
 
-			var createdPointOfInterest = Mapper.Map<PointOfInterestDto>(pointToCreate);
+            var createdPointOfInterest = Mapper.Map<PointOfInterestDto>(pointToCreate);
 
-	        return Created(Request.RequestUri + "/" + createdPointOfInterest.Id, createdPointOfInterest);
+            return this.Created(this.Request.RequestUri + "/" + createdPointOfInterest.Id, createdPointOfInterest);
         }
 
         /// <summary>
-        /// Update existing point of interest for city with specified id
+        /// Update point of interest for specified city.
         /// </summary>
-        /// <param name="cityId">Id of city</param>
-        /// <param name="id">Id of point of interest to update</param>
-        /// <param name="pointOfInterest">Point of interest to create</param>
-        /// <returns></returns>
+        /// <param name="cityId">
+        /// Id of city.
+        /// </param>
+        /// <param name="poiId">
+        /// Id of point of interest.
+        /// </param>
+        /// <param name="pointOfInterest">
+        /// Resulting point of interest.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IHttpActionResult"/>.
+        /// </returns>
         [HttpPut]
         [Route("cities/{cityId}/pointsofinterest/{poiId}")]
-        public IHttpActionResult UpdatePointOfInterest(int cityId, int id,
-			[FromBody] PointOfInterestForCreationDto pointOfInterest)
+        [ResponseType(typeof(HttpStatusCode))]
+        public IHttpActionResult UpdatePointOfInterest(
+            int cityId,
+            int poiId,
+            [FromBody] PointOfInterestForCreationDto pointOfInterest)
         {
-            if (pointOfInterest == null) return BadRequest();
+            if (pointOfInterest == null)
+            {
+                return this.BadRequest();
+            }
 
             if (pointOfInterest.Description == pointOfInterest.Name)
-                ModelState.AddModelError("Description", "Description should not be equal to name");
+            {
+                this.ModelState.AddModelError("Description", "Description should not be equal to name");
+            }
 
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
 
-            if (!_cityInfoRepository.CityExists(cityId)) return NotFound();
+            if (!this.cityInfoRepository.CityExists(cityId))
+            {
+                return this.NotFound();
+            }
 
-	        var pointToUpdate = _cityInfoRepository.GetPointOfInterestForCity(cityId, id);
-            if (pointToUpdate == null) return NotFound();
+            var pointToUpdate = this.cityInfoRepository.GetPointOfInterestForCity(cityId, poiId);
+            if (pointToUpdate == null)
+            {
+                return this.NotFound();
+            }
 
-	        Mapper.Map(pointOfInterest, pointToUpdate);
+            Mapper.Map(pointOfInterest, pointToUpdate);
 
-	        if (!_cityInfoRepository.Save()) return InternalServerError();
+            if (!this.cityInfoRepository.Save())
+            {
+                return this.InternalServerError(new Exception("Failed to save changes into database"));
+            }
 
-	        return StatusCode(HttpStatusCode.NoContent);
+            return this.StatusCode(HttpStatusCode.NoContent);
         }
 
-		/// <summary>
-		/// Delete point of interest for city with specified id
-		/// </summary>
-		/// <param name="cityId">Id of city</param>
-		/// <param name="poiId">Point of interest to update</param>
-		/// <returns></returns>
-		[HttpDelete]
+        /// <summary>
+        /// Delete point of interest for specified city.
+        /// </summary>
+        /// <param name="cityId">
+        /// Id of city.
+        /// </param>
+        /// <param name="poiId">
+        /// Id of point of interest.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IHttpActionResult"/>.
+        /// </returns>
+        [HttpDelete]
         [Route("cities/{cityId}/pointsofinterest/{poiId}")]
-        public IHttpActionResult DeletePointOfAction(int cityId, int poiId)
+        [ResponseType(typeof(HttpStatusCode))]
+        public IHttpActionResult DeletePointOfInterest(int cityId, int poiId)
         {
-            if (!_cityInfoRepository.CityExists(cityId)) return NotFound();
+            if (!this.cityInfoRepository.CityExists(cityId))
+            {
+                return this.NotFound();
+            }
 
-			var pointEntity = _cityInfoRepository.GetPointOfInterestForCity(cityId, poiId);
-			if (pointEntity == null) return NotFound();
+            var pointEntity = this.cityInfoRepository.GetPointOfInterestForCity(cityId, poiId);
+            if (pointEntity == null)
+            {
+                return this.NotFound();
+            }
 
-			_cityInfoRepository.DeletePointOfInterest(pointEntity);
-	        if (!_cityInfoRepository.Save()) return InternalServerError();
+            this.cityInfoRepository.DeletePointOfInterest(pointEntity);
+            if (!this.cityInfoRepository.Save())
+            {
+                return this.InternalServerError(new Exception("Failed to save changes into database"));
+            }
 
-			return StatusCode(HttpStatusCode.NoContent);
+            return this.StatusCode(HttpStatusCode.NoContent);
         }
-
     }
 }

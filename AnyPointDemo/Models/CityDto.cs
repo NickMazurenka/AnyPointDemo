@@ -1,34 +1,43 @@
-﻿using System.Collections.Generic;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CityDto.cs" company="TractManager, Inc.">
+//   Copyright © 2017
+// </copyright>
+// <summary>
+//   City object with points of interest
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace AnyPointDemo.Models
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// City object with points of interest
     /// </summary>
     public class CityDto
     {
         /// <summary>
-        /// Id of city
+        /// Gets or sets the id.
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// Name of city
+        /// Gets or sets the name.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// City description
+        /// Gets or sets the description.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Number of points of interest for city
+        /// The number of points of interest.
         /// </summary>
-        public int NumberOfPointsOfInterest => PointsOfInterest.Count;
+        public int NumberOfPointsOfInterest => this.PointsOfInterest.Count;
 
         /// <summary>
-        /// Collection of points of interest for city
+        /// Gets or sets the points of interest.
         /// </summary>
         public ICollection<PointOfInterestDto> PointsOfInterest { get; set; } = new List<PointOfInterestDto>();
     }

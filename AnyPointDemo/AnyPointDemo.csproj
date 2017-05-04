@@ -6320,7 +6320,6 @@
     <Compile Include="Controllers\PointsOfInterestController.cs" />
     <Compile Include="Controllers\RamlController.cs" />
     <Compile Include="Entities\City.cs" />
-    <Compile Include="Entities\CityInfoContext.cs" />
     <Compile Include="Entities\PointOfInterest.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -6331,8 +6330,7 @@
     <Compile Include="Models\PointOfInterestForCreationDto.cs" />
     <Compile Include="Models\PointOfInterestForUpdateDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\CityInfoRepository.cs" />
-    <Compile Include="Services\DatabaseInitializer.cs" />
+    <Compile Include="Services\CityInfoFakeRepository.cs" />
     <Compile Include="Services\ICityInfoRepository.cs" />
     <Compile Include="Services\IocContainer.cs" />
     <Compile Include="Startup.cs" />
